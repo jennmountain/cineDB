@@ -1,0 +1,9 @@
+{
+  "short_name": "CineDB",
+  "name": "CineDB – Movie Database",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#f7f7f5"
+}
