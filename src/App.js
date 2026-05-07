@@ -25,6 +25,22 @@ const darkModeStyles = `
   body.dark-mode {
     background: #141414 !important;
   }
+  
+  body.dark-mode .wl-stat-value {
+    color: #F0EDE8 !important;
+  }
+
+  body.dark-mode .wl-stat-label {
+    color: #666 !important;
+  }
+
+  body.dark-mode .wl-genre-name {
+    color: #C0BAB4 !important;
+  }
+
+  body.dark-mode .wl-genre-track {
+    background: #2A2A2A !important;
+  }
 
   body.dark-mode .browse-root,
   body.dark-mode .wl-root,
@@ -152,6 +168,131 @@ const darkModeStyles = `
   body.dark-mode .wl-modal { background: #1E1E1E !important; }
   body.dark-mode .wl-modal-title { color: #F0EDE8 !important; }
   body.dark-mode .wl-modal-list { background: #2A2A2A !important; border-color: #3A3A3A !important; color: #C0BAB4 !important; }
+
+  body.dark-mode .adm-panel {
+    background: #141414 !important;
+  }
+
+  body.dark-mode .adm-tabs {
+    background: #1A1A1A !important;
+    border-bottom-color: #2A2A2A !important;
+  }
+
+  body.dark-mode .adm-tab {
+    color: #666 !important;
+  }
+
+  body.dark-mode .adm-tab.active {
+    color: #F0EDE8 !important;
+    border-bottom-color: #C8713A !important;
+  }
+
+  body.dark-mode .adm-overview {
+    background: #141414 !important;
+  }
+
+  body.dark-mode .adm-grid-card,
+  body.dark-mode .adm-person-card,
+  body.dark-mode .adm-season-card,
+  body.dark-mode .adm-credit-item {
+    background: #1E1E1E !important;
+    border-color: #2A2A2A !important;
+  }
+
+  body.dark-mode .adm-grid-title,
+  body.dark-mode .adm-panel-title,
+  body.dark-mode .adm-person-name,
+  body.dark-mode .adm-list-title {
+    color: #F0EDE8 !important;
+  }
+
+  body.dark-mode .adm-add-new-card {
+    border-color: #3A3A3A !important;
+    color: #555 !important;
+  }
+
+  body.dark-mode .adm-add-new-card:hover {
+    border-color: #C8713A !important;
+    color: #C8713A !important;
+    background: #1A0F08 !important;
+  }
+
+  body.dark-mode .adm-form-card-title {
+    color: #666 !important;
+  }
+
+  body.dark-mode .adm-field label {
+    color: #666 !important;
+  }
+
+  body.dark-mode .adm-season-header {
+    background: #242424 !important;
+  }
+  
+  body.dark-mode .adm-root,
+  body.dark-mode .sql-main {
+    background: #141414 !important;
+  }
+
+  /* Detail page */
+  body.dark-mode .media-card,
+  body.dark-mode [style*="maxWidth: 900"],
+  body.dark-mode [style*="max-width: 900"] {
+    background: #141414 !important;
+  }
+
+  body.dark-mode [style*="background: #F8F6F2"],
+  body.dark-mode [style*="background: '#F8F6F2'"] {
+    background: #141414 !important;
+  }
+
+  body.dark-mode [style*="color: '#1C1C1A'"],
+  body.dark-mode [style*="color: #1C1C1A"] {
+    color: #F0EDE8 !important;
+  }
+
+  body.dark-mode [style*="color: '#4A4440'"],
+  body.dark-mode [style*="color: #4A4440"] {
+    color: #C0BAB4 !important;
+  }
+
+  body.dark-mode [style*="color: '#9A9390'"],
+  body.dark-mode [style*="color: #9A9390"] {
+    color: #666 !important;
+  }
+
+  body.dark-mode [style*="borderTop: '1px solid #E4DDD4'"],
+  body.dark-mode [style*="border: '1px solid #E4DDD4'"],
+  body.dark-mode [style*="borderBottom: '1px solid #F0EBE4'"] {
+    border-color: #2A2A2A !important;
+  }
+
+  body.dark-mode [style*="background: '#fff'"],
+  body.dark-mode [style*="background: '#ffffff'"],
+  body.dark-mode [style*="background: #fff"] {
+    background: #1E1E1E !important;
+  }
+
+  body.dark-mode [style*="border: '1px solid #EDE9E3'"],
+  body.dark-mode [style*="border: '1.5px solid #D4C9BA'"] {
+    border-color: #2A2A2A !important;
+  }
+
+  body.dark-mode textarea,
+  body.dark-mode input[type="text"],
+  body.dark-mode input[type="email"],
+  body.dark-mode input[type="password"],
+  body.dark-mode input[type="number"] {
+    background: #2A2A2A !important;
+    color: #F0EDE8 !important;
+    border-color: #3A3A3A !important;
+  }
+
+  /* Person page, detail page containers */
+  body.dark-mode div[style*="minHeight: '100vh'"],
+  body.dark-mode div[style*="min-height: 100vh"] {
+    background: #141414 !important;
+  }
 `
 
 export default function App() {
