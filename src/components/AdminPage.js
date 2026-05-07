@@ -863,6 +863,139 @@ const adminStyles = `
     background: #FDF0E8;
   }
 
+  /* Queries tab */
+  .adm-queries-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 28px;
+    background: #F8F6F2;
+  }
+
+  .adm-queries-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .adm-query-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .adm-query-card {
+    background: #fff;
+    border: 1px solid #EDE9E3;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .adm-query-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .adm-query-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1C1C1A;
+    margin-bottom: 4px;
+  }
+
+  .adm-query-preview {
+    font-size: 11px;
+    color: #9A9390;
+    font-family: 'ui-monospace', monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .adm-query-badges {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  .adm-query-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+  }
+
+  .adm-query-badge.default {
+    background: #EDE9E3;
+    color: #9A9390;
+  }
+
+  .adm-query-badge.quick {
+    background: #FDF0E8;
+    color: #B5622A;
+    border: 1px solid #F0D4B8;
+  }
+
+  .adm-query-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .adm-query-toggle.on {
+    background: #FDF0E8;
+    border-color: #B5622A;
+    color: #B5622A;
+  }
+
+  .adm-query-toggle.off {
+    background: transparent;
+    border-color: #D4C9BA;
+    color: #9A9390;
+  }
+
+  .adm-query-toggle.off:hover {
+    border-color: #B5622A;
+    color: #B5622A;
+  }
+
+  .adm-query-delete {
+    background: none;
+    border: none;
+    color: #D4C9BA;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.15s;
+    flex-shrink: 0;
+  }
+
+  .adm-query-delete:hover { color: #c0392b; }
+
+  body.dark-mode .adm-queries-wrap { background: #141414 !important; }
+  body.dark-mode .adm-query-card { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .adm-query-title { color: #F0EDE8 !important; }
+  body.dark-mode .adm-query-preview { color: #555 !important; }
+  body.dark-mode .adm-query-badge.default { background: #2A2A2A !important; color: #666 !important; }
+  body.dark-mode .adm-query-toggle.off { border-color: #3A3A3A !important; color: #666 !important; }
+
 `
 
 export default function AdminPage() {
@@ -873,7 +1006,7 @@ export default function AdminPage() {
       <style>{adminStyles}</style>
       <div className="adm-root">
         <div className="adm-tabs">
-          {[['media', '🎬 Media'], ['people', '👤 People']].map(([key, label]) => (
+          {[['media', '🎬 Media'], ['people', '👤 People'], ['queries', '⚡ Quick Queries']].map(([key, label]) => (
             <button key={key} onClick={() => setActiveTab(key)}
               className={`adm-tab${activeTab === key ? ' active' : ''}`}>
               {label}
@@ -1663,6 +1796,90 @@ function PeopleTab() {
     </>
   )
 }
+
+function QueriesTab() {
+  const [queries,  setQueries]  = useState([])
+  const [loading,  setLoading]  = useState(true)
+  const [toggling, setToggling] = useState(null)
+
+  useEffect(() => { fetchQueries() }, [])
+
+  async function fetchQueries() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('saved_queries')
+      .select('*')
+      .order('is_default', { ascending: false })
+      .order('is_quick', { ascending: false })
+      .order('title', { ascending: true })
+    setQueries(data || [])
+    setLoading(false)
+  }
+
+  async function toggleQuick(query) {
+    setToggling(query.id)
+    const { error } = await supabase
+      .from('saved_queries')
+      .update({ is_quick: !query.is_quick })
+      .eq('id', query.id)
+    if (!error) setQueries(prev => prev.map(q => q.id === query.id ? { ...q, is_quick: !q.is_quick } : q))
+    setToggling(null)
+  }
+
+  async function deleteQuery(query) {
+    if (query.is_default) { alert('Default queries cannot be deleted here.'); return }
+    if (!window.confirm(`Delete "${query.title}"?`)) return
+    await supabase.from('saved_queries').delete().eq('id', query.id)
+    setQueries(prev => prev.filter(q => q.id !== query.id))
+  }
+
+  const quickCount = queries.filter(q => q.is_quick).length
+
+  return (
+    <div className="adm-queries-wrap">
+      <div className="adm-queries-header">
+        <div>
+          <div className="adm-overview-label">SQL Explorer</div>
+          <div className="adm-overview-title">Quick Query Buttons</div>
+          <div style={{ fontSize: 13, color: '#9A9390', marginTop: 4 }}>
+            Toggle which queries appear as quick buttons in the SQL Explorer. {quickCount} active.
+          </div>
+        </div>
+      </div>
+
+      {loading && <p style={{ fontSize: 13, color: '#9A9390' }}>Loading…</p>}
+
+      <div className="adm-query-list">
+        {queries.map(q => (
+          <div key={q.id} className="adm-query-card">
+            <div className="adm-query-info">
+              <div className="adm-query-title">{q.title}</div>
+              <div className="adm-query-preview">{q.sql.trim().split('\n')[0].slice(0, 80)}</div>
+            </div>
+            <div className="adm-query-badges">
+              {q.is_default && <span className="adm-query-badge default">Default</span>}
+              {q.is_quick   && <span className="adm-query-badge quick">⚡ Quick</span>}
+            </div>
+            <button
+              className={`adm-query-toggle ${q.is_quick ? 'on' : 'off'}`}
+              onClick={() => toggleQuick(q)}
+              disabled={toggling === q.id}
+            >
+              {toggling === q.id ? '…' : q.is_quick ? '⚡ Remove from Quick' : '+ Add to Quick'}
+            </button>
+            {!q.is_default && (
+              <button className="adm-query-delete" onClick={() => deleteQuery(q)} title="Delete query">✕</button>
+            )}
+          </div>
+        ))}
+        {!loading && queries.length === 0 && (
+          <p style={{ fontSize: 13, color: '#9A9390' }}>No queries found.</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 
 const inputStyle = {
   border: '1.5px solid #D4C9BA', borderRadius: 8, padding: '8px 10px',
