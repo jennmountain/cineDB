@@ -199,7 +199,7 @@ const navStyles = `
   }
 `
 
-export default function Navbar({ profile, currentPage, navigate, onSignOut }) {
+export default function Navbar({ profile, currentPage, navigate, onSignOut, darkMode, onToggleDark }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navItem = (label, target, emoji = null) => (
@@ -230,12 +230,25 @@ export default function Navbar({ profile, currentPage, navigate, onSignOut }) {
           {navItem('Browse', 'browse', '🎬')}
           {navItem('My List', 'watchlist', '📋')}
           {navItem('Picks', 'recommendations', '⭐')}
+          {navItem('💎 Gems', 'gems', null)}
           {navItem('SQL Explorer', 'sql', '🔍')}
           {profile?.is_admin && navItem('Admin', 'admin', '⚙️')}
         </div>
 
         {/* User menu */}
         <div className="navbar-right">
+          <button
+            onClick={onToggleDark}
+            style={{
+              background: 'none', border: '1.5px solid #D4C9BA', borderRadius: '100px',
+              padding: '5px 12px', cursor: 'pointer', fontSize: 13,
+              color: '#6B6660', fontFamily: 'DM Sans, sans-serif', fontWeight: 500,
+              transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 5,
+            }}
+            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {darkMode ? '☀️' : '🌙'}
+          </button>
           <span className="navbar-username-chip">{profile?.username}</span>
           <button
             className="navbar-avatar"
