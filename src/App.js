@@ -293,6 +293,84 @@ const darkModeStyles = `
   body.dark-mode div[style*="min-height: 100vh"] {
     background: #141414 !important;
   }
+
+  /* Detail page title and stats */
+  body.dark-mode h1,
+  body.dark-mode h2,
+  body.dark-mode h3 {
+    color: #F0EDE8 !important;
+  }
+
+  body.dark-mode strong {
+    color: #F0EDE8 !important;
+  }
+
+  /* Detail page and review cards */
+  body.dark-mode div[style*="background: #fff"],
+  body.dark-mode div[style*="background: '#fff'"],
+  body.dark-mode div[style*='background: "#fff"'] {
+    background: #1E1E1E !important;
+    color: #C0BAB4 !important;
+  }
+
+  /* You might also like cards */
+  body.dark-mode div[style*="background: '#fff'"][style*="borderRadius: 10"],
+  body.dark-mode div[style*="background: #fff"][style*="border-radius"] {
+    background: #1E1E1E !important;
+    border-color: #2A2A2A !important;
+  }
+
+  /* SQL quick bar and editor wrap */
+  body.dark-mode .sql-quick-bar {
+    background: #1A1A1A !important;
+    border-bottom-color: #2A2A2A !important;
+  }
+
+  body.dark-mode .sql-quick-btn {
+    border-color: #3A3A3A !important;
+    color: #888 !important;
+  }
+
+  body.dark-mode .sql-editor-wrap {
+    background: #1A1A1A !important;
+    border-bottom-color: #2A2A2A !important;
+  }
+
+  body.dark-mode .sql-select-badge {
+    background: #2A2A2A !important;
+    color: #666 !important;
+  }
+
+  body.dark-mode .sql-action-row input,
+  body.dark-mode .sql-title-input {
+    background: #2A2A2A !important;
+    border-color: #3A3A3A !important;
+    color: #F0EDE8 !important;
+  }
+
+  /* Cast names invisible fix */
+  body.dark-mode button[style*="color: '#1C1C1A'"],
+  body.dark-mode button[style*="textDecoration: 'underline'"] {
+    color: #C8713A !important;
+  }
+
+  /* Review cards */
+  body.dark-mode div[style*="border: '1px solid #E4DDD4'"][style*="borderRadius: 12"] {
+    background: #1E1E1E !important;
+    border-color: #2A2A2A !important;
+  }
+
+  /* Year/genre/rating text */
+  body.dark-mode span[style*="color: '#1C1C1A'"],
+  body.dark-mode p[style*="color: '#4A4440'"],
+  body.dark-mode div[style*="color: '#4A4440'"] {
+    color: #C0BAB4 !important;
+  }
+
+  /* Fix overview text */
+  body.dark-mode p[style*="color: '#4A4440'"] {
+    color: #9A9390 !important;
+  }
 `
 
 export default function App() {
