@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import supabase from '../config/supabaseClient'
 
 const GENRES    = ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Thriller', 'Romance', 'Documentary', 'Animation', 'Crime']
+const MPA_RATINGS = ['G', 'PG', 'PG-13', 'R', 'NC-17', 'NR']
 const ROLES     = ['actor', 'director', 'producer', 'writer']
 const ROLE_LABELS = { actor: 'Actor', director: 'Director', producer: 'Producer', writer: 'Writer' }
 const ROLE_COLORS = {
@@ -10,7 +11,7 @@ const ROLE_COLORS = {
   producer: { bg: '#EFF6FF', color: '#1E40AF' },
   actor:    { bg: '#FAF5FF', color: '#6B21A8' },
 }
-const EMPTY_MEDIA_FORM  = { title: '', type: 'movie', genre: '', overview: '', release_year: '', runtime_minutes: '' }
+const EMPTY_MEDIA_FORM  = { title: '', type: 'movie', genre: '', overview: '', release_year: '', end_year: '', runtime_minutes: '', mpa_rating: '' }
 const EMPTY_PERSON_FORM = { name: '', bio: '', born_year: '', died_year: '' }
 
 function getPosterUrl(posterUrl) {
@@ -20,16 +21,11 @@ function getPosterUrl(posterUrl) {
   return data.publicUrl
 }
 
-// ─────────────────────────────────────────────
-// Root component
-// ─────────────────────────────────────────────
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState('media')   // 'media' | 'people'
+  const [activeTab, setActiveTab] = useState('media')
 
   return (
     <div style={{ height: 'calc(100vh - 54px)', display: 'flex', flexDirection: 'column' }}>
-
-      {/* Tab bar */}
       <div style={{ display: 'flex', borderBottom: '0.5px solid #eee', background: '#fff', flexShrink: 0 }}>
         {[['media', 'Media'], ['people', 'People']].map(([key, label]) => (
           <button key={key} onClick={() => setActiveTab(key)} style={{
@@ -42,7 +38,6 @@ export default function AdminPage() {
           </button>
         ))}
       </div>
-
       <div style={{ flex: 1, overflow: 'hidden' }}>
         {activeTab === 'media'  && <MediaTab />}
         {activeTab === 'people' && <PeopleTab />}
@@ -51,9 +46,6 @@ export default function AdminPage() {
   )
 }
 
-// ─────────────────────────────────────────────
-// MEDIA TAB
-// ─────────────────────────────────────────────
 function MediaTab() {
   const [media,         setMedia]         = useState([])
   const [loading,       setLoading]       = useState(true)
@@ -67,8 +59,6 @@ function MediaTab() {
   const [error,         setError]         = useState(null)
   const [success,       setSuccess]       = useState(null)
   const [panelOpen,     setPanelOpen]     = useState(false)
-
-  // Credits state (for the selected media item)
   const [credits,          setCredits]          = useState([])
   const [allPeople,        setAllPeople]        = useState([])
   const [creditSearch,     setCreditSearch]     = useState('')
@@ -80,7 +70,6 @@ function MediaTab() {
   const fileRef = useRef()
 
   useEffect(() => { fetchMedia() }, [])
-  // Pre-load people list once for credits search
   useEffect(() => {
     supabase.from('people').select('id, name').order('name').then(({ data }) => setAllPeople(data || []))
   }, [])
@@ -120,7 +109,9 @@ function MediaTab() {
       genre:           item.genre || '',
       overview:        item.overview || '',
       release_year:    item.release_year    || '',
+      end_year:        item.end_year        || '',
       runtime_minutes: item.runtime_minutes || '',
+      mpa_rating:      item.mpa_rating      || '',
     })
     setPosterFile(null)
     setPosterPreview(getPosterUrl(item.poster_url))
@@ -162,7 +153,9 @@ function MediaTab() {
       genre:           form.genre || null,
       overview:        form.overview.trim() || null,
       release_year:    form.release_year    ? parseInt(form.release_year)    : null,
+      end_year:        form.end_year        ? parseInt(form.end_year)        : null,
       runtime_minutes: form.runtime_minutes ? parseInt(form.runtime_minutes) : null,
+      mpa_rating:      form.mpa_rating      || null,
       poster_url,
     }
 
@@ -219,23 +212,20 @@ function MediaTab() {
   const set      = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
   const filtered = media.filter(m => m.title.toLowerCase().includes(search.toLowerCase()))
 
-  // Show suggestions only while the user is actively typing (not after they've selected)
   const peopleSuggestions = creditSearch.length >= 1 && !creditPersonLocked
     ? allPeople.filter(p => p.name.toLowerCase().includes(creditSearch.toLowerCase())).slice(0, 6)
     : []
 
   return (
     <div style={{ display: 'flex', height: '100%' }}>
-
-      {/* Left: media list */}
       <div style={{ width: panelOpen ? 380 : '100%', borderRight: '0.5px solid #eee', display: 'flex', flexDirection: 'column', transition: 'width 0.2s', flexShrink: 0 }}>
         <div style={{ padding: '16px 16px 12px', borderBottom: '0.5px solid #eee', display: 'flex', gap: 8, alignItems: 'center' }}>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..."
             style={{ flex: 1, border: '0.5px solid #ddd', borderRadius: 8, padding: '8px 12px', fontSize: 13, outline: 'none' }} />
           <button onClick={openAdd} style={s.addBtn}>+ Add</button>
         </div>
         <div style={{ overflowY: 'auto', flex: 1 }}>
-          {loading && <p style={{ padding: 20, color: '#888', fontSize: 13 }}>Loading…</p>}
+          {loading && <p style={{ padding: 20, color: '#888', fontSize: 13 }}>Loading...</p>}
           {filtered.map(item => (
             <div key={item.id} onClick={() => openEdit(item)} style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px',
@@ -245,29 +235,29 @@ function MediaTab() {
               <div style={{ width: 36, height: 50, borderRadius: 5, overflow: 'hidden', background: '#eee', flexShrink: 0 }}>
                 {getPosterUrl(item.poster_url)
                   ? <img src={getPosterUrl(item.poster_url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#bbb' }}>—</div>}
+                  : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#bbb' }}>-</div>}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
                 <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
-                  {item.type === 'movie' ? 'Movie' : 'TV'} · {item.release_year || '—'}
-                  {item.avg_rating > 0 && ` · ★ ${item.avg_rating}`}
+                  {item.type === 'movie' ? 'Movie' : 'TV'} · {item.release_year || '-'}
+                  {item.mpa_rating && ` · ${item.mpa_rating}`}
+                  {item.avg_rating > 0 && ` · * ${item.avg_rating}`}
                 </div>
               </div>
               <button onClick={e => { e.stopPropagation(); handleDelete(item) }} disabled={deleting}
-                style={{ background: 'none', border: 'none', color: '#ddd', cursor: 'pointer', fontSize: 15, padding: 4 }}>✕</button>
+                style={{ background: 'none', border: 'none', color: '#ddd', cursor: 'pointer', fontSize: 15, padding: 4 }}>x</button>
             </div>
           ))}
           {!loading && filtered.length === 0 && <p style={{ padding: 20, color: '#aaa', fontSize: 13 }}>No results</p>}
         </div>
       </div>
 
-      {/* Right: edit/add panel */}
       {panelOpen && (
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
             <h2 style={{ fontSize: 16, fontWeight: 600 }}>{selected ? 'Edit media' : 'Add media'}</h2>
-            <button onClick={() => setPanelOpen(false)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: 17 }}>✕</button>
+            <button onClick={() => setPanelOpen(false)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: 17 }}>x</button>
           </div>
 
           {error   && <div style={s.errorBox}>{error}</div>}
@@ -288,7 +278,7 @@ function MediaTab() {
             <div>
               <Label>Genre</Label>
               <select value={form.genre} onChange={set('genre')} style={s.input}>
-                <option value="">— none —</option>
+                <option value="">- none -</option>
                 {GENRES.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
@@ -296,17 +286,29 @@ function MediaTab() {
               <Label>Release year</Label>
               <input type="number" value={form.release_year} onChange={set('release_year')} placeholder="e.g. 1972" style={s.input} min={1888} max={2100} />
             </div>
+            {form.type === 'tv' && (
+              <div>
+                <Label>End year</Label>
+                <input type="number" value={form.end_year} onChange={set('end_year')} placeholder="Leave blank if ongoing" style={s.input} min={1888} max={2100} />
+              </div>
+            )}
             <div>
               <Label>Runtime (minutes)</Label>
               <input type="number" value={form.runtime_minutes} onChange={set('runtime_minutes')} placeholder="e.g. 175" style={s.input} min={1} />
             </div>
+            <div>
+              <Label>MPA Rating</Label>
+              <select value={form.mpa_rating} onChange={set('mpa_rating')} style={s.input}>
+                <option value="">- none -</option>
+                {MPA_RATINGS.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <Label>Overview</Label>
-              <textarea value={form.overview} onChange={set('overview')} rows={3} placeholder="Short description…" style={{ ...s.input, resize: 'vertical' }} />
+              <textarea value={form.overview} onChange={set('overview')} rows={3} placeholder="Short description..." style={{ ...s.input, resize: 'vertical' }} />
             </div>
           </div>
 
-          {/* Poster upload */}
           <div style={{ marginBottom: 18 }}>
             <Label>Poster image</Label>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
@@ -331,24 +333,20 @@ function MediaTab() {
             </div>
           </div>
 
-          {/* Save / Delete */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 28 }}>
             <button onClick={handleSave} disabled={saving} style={s.primaryBtn}>
-              {saving ? 'Saving…' : selected ? 'Save changes' : 'Add media'}
+              {saving ? 'Saving...' : selected ? 'Save changes' : 'Add media'}
             </button>
             {selected && (
               <button onClick={() => handleDelete(selected)} disabled={deleting} style={s.dangerBtn}>
-                {deleting ? 'Deleting…' : 'Delete'}
+                {deleting ? 'Deleting...' : 'Delete'}
               </button>
             )}
           </div>
 
-          {/* ── Cast & Crew section (only when editing an existing item) ── */}
           {selected && (
             <div style={{ borderTop: '0.5px solid #eee', paddingTop: 20 }}>
               <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}>Cast &amp; Crew</h3>
-
-              {/* Existing credits */}
               {credits.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
                   {credits.map(c => (
@@ -364,23 +362,21 @@ function MediaTab() {
                       {c.character_name && <span style={{ fontSize: 11, color: '#888' }}>as {c.character_name}</span>}
                       <button onClick={() => handleRemoveCredit(c.id)}
                         style={{ background: 'none', border: 'none', color: '#ccc', cursor: 'pointer', fontSize: 14, padding: '0 2px', flexShrink: 0 }}
-                        title="Remove">✕</button>
+                        title="Remove">x</button>
                     </div>
                   ))}
                 </div>
               )}
               {credits.length === 0 && <p style={{ fontSize: 12, color: '#aaa', marginBottom: 14 }}>No credits yet.</p>}
 
-              {/* Add credit form */}
               <div style={{ background: '#f9f9f7', border: '0.5px solid #eee', borderRadius: 10, padding: 14 }}>
                 <p style={{ fontSize: 12, fontWeight: 500, color: '#666', marginBottom: 10 }}>Add credit</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 8, marginBottom: 8 }}>
-                  {/* Person search */}
                   <div style={{ position: 'relative' }}>
                     <input
                       value={creditSearch}
                       onChange={e => { setCreditSearch(e.target.value); setCreditPersonLocked(false) }}
-                      placeholder="Search people…"
+                      placeholder="Search people..."
                       style={{ ...s.input, fontSize: 12 }}
                     />
                     {peopleSuggestions.length > 0 && (
@@ -401,12 +397,10 @@ function MediaTab() {
                       </div>
                     )}
                   </div>
-                  {/* Role */}
                   <select value={creditRole} onChange={e => setCreditRole(e.target.value)} style={{ ...s.input, fontSize: 12, width: 'auto' }}>
                     {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                   </select>
                 </div>
-                {/* Character name — only for actors */}
                 {creditRole === 'actor' && (
                   <input
                     value={creditCharacter}
@@ -419,7 +413,7 @@ function MediaTab() {
                   ...s.primaryBtn, fontSize: 12, padding: '7px 14px',
                   opacity: !creditSearch.trim() ? 0.5 : 1,
                 }}>
-                  {addingCredit ? 'Adding…' : '+ Add credit'}
+                  {addingCredit ? 'Adding...' : '+ Add credit'}
                 </button>
               </div>
             </div>
@@ -430,9 +424,6 @@ function MediaTab() {
   )
 }
 
-// ─────────────────────────────────────────────
-// PEOPLE TAB
-// ─────────────────────────────────────────────
 function PeopleTab() {
   const [people,       setPeople]       = useState([])
   const [loading,      setLoading]      = useState(true)
@@ -547,23 +538,20 @@ function PeopleTab() {
 
   return (
     <div style={{ display: 'flex', height: '100%' }}>
-
-      {/* Left: people list */}
       <div style={{ width: panelOpen ? 340 : '100%', borderRight: '0.5px solid #eee', display: 'flex', flexDirection: 'column', transition: 'width 0.2s', flexShrink: 0 }}>
         <div style={{ padding: '16px 16px 12px', borderBottom: '0.5px solid #eee', display: 'flex', gap: 8, alignItems: 'center' }}>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search people…"
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search people..."
             style={{ flex: 1, border: '0.5px solid #ddd', borderRadius: 8, padding: '8px 12px', fontSize: 13, outline: 'none' }} />
           <button onClick={openAdd} style={s.addBtn}>+ Add</button>
         </div>
         <div style={{ overflowY: 'auto', flex: 1 }}>
-          {loading && <p style={{ padding: 20, color: '#888', fontSize: 13 }}>Loading…</p>}
+          {loading && <p style={{ padding: 20, color: '#888', fontSize: 13 }}>Loading...</p>}
           {filtered.map(person => (
             <div key={person.id} onClick={() => openEdit(person)} style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px',
               borderBottom: '0.5px solid #f5f5f5', cursor: 'pointer',
               background: selected?.id === person.id ? '#f7f7f5' : '#fff',
             }}>
-              {/* Avatar / photo */}
               <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', background: '#eee', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {getPhotoUrl(person.photo_url)
                   ? <img src={getPhotoUrl(person.photo_url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -573,24 +561,23 @@ function PeopleTab() {
                 <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{person.name}</div>
                 <div style={{ fontSize: 11, color: '#888', marginTop: 1 }}>
                   {person.born_year ? `b. ${person.born_year}` : ''}
-                  {person.born_year && person.died_year ? ' – ' : ''}
+                  {person.born_year && person.died_year ? ' - ' : ''}
                   {person.died_year ? `d. ${person.died_year}` : ''}
                 </div>
               </div>
               <button onClick={e => { e.stopPropagation(); handleDelete(person) }} disabled={deleting}
-                style={{ background: 'none', border: 'none', color: '#ddd', cursor: 'pointer', fontSize: 15, padding: 4 }}>✕</button>
+                style={{ background: 'none', border: 'none', color: '#ddd', cursor: 'pointer', fontSize: 15, padding: 4 }}>x</button>
             </div>
           ))}
           {!loading && filtered.length === 0 && <p style={{ padding: 20, color: '#aaa', fontSize: 13 }}>No results</p>}
         </div>
       </div>
 
-      {/* Right: edit/add panel */}
       {panelOpen && (
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
             <h2 style={{ fontSize: 16, fontWeight: 600 }}>{selected ? 'Edit person' : 'Add person'}</h2>
-            <button onClick={() => setPanelOpen(false)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: 17 }}>✕</button>
+            <button onClick={() => setPanelOpen(false)} style={{ background: 'none', border: 'none', color: '#999', cursor: 'pointer', fontSize: 17 }}>x</button>
           </div>
 
           {error   && <div style={s.errorBox}>{error}</div>}
@@ -611,11 +598,10 @@ function PeopleTab() {
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <Label>Bio</Label>
-              <textarea value={form.bio} onChange={set('bio')} rows={4} placeholder="Short biography…" style={{ ...s.input, resize: 'vertical' }} />
+              <textarea value={form.bio} onChange={set('bio')} rows={4} placeholder="Short biography..." style={{ ...s.input, resize: 'vertical' }} />
             </div>
           </div>
 
-          {/* Photo upload */}
           <div style={{ marginBottom: 20 }}>
             <Label>Photo</Label>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
@@ -642,11 +628,11 @@ function PeopleTab() {
 
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={handleSave} disabled={saving} style={s.primaryBtn}>
-              {saving ? 'Saving…' : selected ? 'Save changes' : 'Add person'}
+              {saving ? 'Saving...' : selected ? 'Save changes' : 'Add person'}
             </button>
             {selected && (
               <button onClick={() => handleDelete(selected)} disabled={deleting} style={s.dangerBtn}>
-                {deleting ? 'Deleting…' : 'Delete'}
+                {deleting ? 'Deleting...' : 'Delete'}
               </button>
             )}
           </div>
@@ -656,9 +642,6 @@ function PeopleTab() {
   )
 }
 
-// ─────────────────────────────────────────────
-// Shared small components & styles
-// ─────────────────────────────────────────────
 function Label({ children }) {
   return <label style={{ display: 'block', fontSize: 12, color: '#666', fontWeight: 500, marginBottom: 4 }}>{children}</label>
 }

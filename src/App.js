@@ -6,6 +6,7 @@ import BrowsePage from './components/BrowsePage'
 import DetailPage from './components/DetailPage'
 import PersonPage from './components/PersonPage'
 import WatchlistPage from './components/WatchlistPage'
+import RecommendationsPage from './components/RecommendationsPage'
 import AdminPage from './components/AdminPage'
 import SqlPage from './components/SqlPage'
 import Navbar from './components/Navbar'
@@ -13,7 +14,7 @@ import Navbar from './components/Navbar'
 export default function App() {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
-  const [page, setPage]       = useState('browse')   // browse | detail | person | watchlist | admin | sql
+  const [page, setPage]       = useState('browse')   // browse | detail | person | watchlist | recommendations | admin | sql
   const [detailId, setDetailId] = useState(null)
   const [personId, setPersonId] = useState(null)
   const [loadingAuth, setLoadingAuth] = useState(true)
@@ -63,7 +64,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f7f7f5' }}>
+    <div style={{ minHeight: '100vh', background: '#F8F6F2' }}>
       <Navbar
         profile={profile}
         currentPage={page}
@@ -83,6 +84,9 @@ export default function App() {
         )}
         {page === 'watchlist' && (
           <WatchlistPage navigate={navigate} session={session} profile={profile} />
+        )}
+        {page === 'recommendations' && (
+          <RecommendationsPage navigate={navigate} session={session} profile={profile} />
         )}
         {page === 'admin' && profile?.is_admin && (
           <AdminPage navigate={navigate} session={session} profile={profile} />
