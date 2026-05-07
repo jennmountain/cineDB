@@ -67,6 +67,17 @@ function MediaTab() {
   const [creditCharacter,  setCreditCharacter]  = useState('')
   const [addingCredit,     setAddingCredit]     = useState(false)
 
+  // Seasons & Episodes
+  const [seasons,        setSeasons]        = useState([])
+  const [newSeasonTitle, setNewSeasonTitle] = useState('')
+  const [newSeasonNum,   setNewSeasonNum]   = useState('')
+  const [addingSeason,   setAddingSeason]   = useState(false)
+  const [expandedSeason, setExpandedSeason] = useState(null)
+  const [newEpNum,       setNewEpNum]       = useState('')
+  const [newEpTitle,     setNewEpTitle]     = useState('')
+  const [newEpRuntime,   setNewEpRuntime]   = useState('')
+  const [addingEp,       setAddingEp]       = useState(false)
+
   const fileRef = useRef()
 
   useEffect(() => { fetchMedia() }, [])
@@ -79,6 +90,55 @@ function MediaTab() {
     const { data } = await supabase.from('media').select('*').order('created_at', { ascending: false })
     setMedia(data || [])
     setLoading(false)
+  }
+
+  async function fetchSeasons(mediaId) {
+    const { data } = await supabase
+      .from('seasons')
+      .select('*, episodes(id, episode_num, title, runtime_minutes)')
+      .eq('media_id', mediaId)
+      .order('season_num')
+      .order('episode_num', { referencedTable: 'episodes' })
+    setSeasons(data || [])
+  }
+
+  async function handleAddSeason(mediaId) {
+    if (!newSeasonNum) { alert('Season number is required.'); return }
+    setAddingSeason(true)
+    const { error: e } = await supabase.from('seasons').insert({
+      media_id:   mediaId,
+      season_num: parseInt(newSeasonNum),
+      title:      newSeasonTitle.trim() || `Season ${newSeasonNum}`,
+    })
+    if (e) alert('Error adding season: ' + e.message)
+    else { setNewSeasonNum(''); setNewSeasonTitle(''); fetchSeasons(mediaId) }
+    setAddingSeason(false)
+  }
+
+  async function handleRemoveSeason(seasonId, mediaId) {
+    if (!window.confirm('Delete this season and all its episodes?')) return
+    await supabase.from('seasons').delete().eq('id', seasonId)
+    fetchSeasons(mediaId)
+  }
+
+  async function handleAddEpisode(seasonId, mediaId) {
+    if (!newEpNum) { alert('Episode number is required.'); return }
+    setAddingEp(true)
+    const { error: e } = await supabase.from('episodes').insert({
+      season_id:       seasonId,
+      media_id:        mediaId,
+      episode_num:     parseInt(newEpNum),
+      title:           newEpTitle.trim() || `Episode ${newEpNum}`,
+      runtime_minutes: newEpRuntime ? parseInt(newEpRuntime) : null,
+    })
+    if (e) alert('Error adding episode: ' + e.message)
+    else { setNewEpNum(''); setNewEpTitle(''); setNewEpRuntime(''); fetchSeasons(mediaId) }
+    setAddingEp(false)
+  }
+
+  async function handleRemoveEpisode(episodeId, mediaId) {
+    await supabase.from('episodes').delete().eq('id', episodeId)
+    fetchSeasons(mediaId)
   }
 
   async function fetchCredits(mediaId) {
@@ -97,6 +157,7 @@ function MediaTab() {
     setPosterFile(null); setPosterPreview(null)
     setError(null); setSuccess(null)
     setCredits([])
+    setSeasons([])
     resetCreditForm()
     setPanelOpen(true)
   }
@@ -119,6 +180,8 @@ function MediaTab() {
     setError(null); setSuccess(null)
     resetCreditForm()
     fetchCredits(item.id)
+    if (item.type === 'tv') fetchSeasons(item.id)
+    else setSeasons([])
     setPanelOpen(true)
   }
 
@@ -358,6 +421,71 @@ function MediaTab() {
             )}
           </div>
 
+
+          {selected && selected.type === 'tv' && (
+            <div style={{ borderTop: '0.5px solid #eee', paddingTop: 20, marginTop: 4 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}>Seasons &amp; Episodes</h3>
+
+              {/* Existing seasons */}
+              {seasons.map(season => (
+                <div key={season.id} style={{ border: '0.5px solid #eee', borderRadius: 10, marginBottom: 10, overflow: 'hidden' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#f9f9f7', cursor: 'pointer' }}
+                    onClick={() => setExpandedSeason(expandedSeason === season.id ? null : season.id)}>
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>{season.title || `Season ${season.season_num}`}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 11, color: '#aaa' }}>{season.episodes?.length || 0} eps</span>
+                      <button onClick={e => { e.stopPropagation(); handleRemoveSeason(season.id, selected.id) }}
+                        style={{ background: 'none', border: 'none', color: '#ddd', cursor: 'pointer', fontSize: 13 }}>x</button>
+                    </div>
+                  </div>
+
+                  {expandedSeason === season.id && (
+                    <div style={{ padding: '10px 14px' }}>
+                      {/* Episode list */}
+                      {season.episodes?.map(ep => (
+                        <div key={ep.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0', borderBottom: '0.5px solid #f5f5f5' }}>
+                          <span style={{ fontSize: 11, color: '#aaa', minWidth: 20 }}>{ep.episode_num}</span>
+                          <span style={{ fontSize: 12, flex: 1 }}>{ep.title}</span>
+                          {ep.runtime_minutes && <span style={{ fontSize: 11, color: '#aaa' }}>{ep.runtime_minutes}m</span>}
+                          <button onClick={() => handleRemoveEpisode(ep.id, selected.id)}
+                            style={{ background: 'none', border: 'none', color: '#ddd', cursor: 'pointer', fontSize: 12 }}>x</button>
+                        </div>
+                      ))}
+
+                      {/* Add episode */}
+                      <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
+                        <input type="number" value={newEpNum} onChange={e => setNewEpNum(e.target.value)}
+                          placeholder="Ep #" style={{ ...s.input, width: 60, fontSize: 12 }} min={1} />
+                        <input value={newEpTitle} onChange={e => setNewEpTitle(e.target.value)}
+                          placeholder="Episode title" style={{ ...s.input, flex: 1, minWidth: 120, fontSize: 12 }} />
+                        <input type="number" value={newEpRuntime} onChange={e => setNewEpRuntime(e.target.value)}
+                          placeholder="Min" style={{ ...s.input, width: 60, fontSize: 12 }} min={1} />
+                        <button onClick={() => handleAddEpisode(season.id, selected.id)} disabled={addingEp || !newEpNum}
+                          style={{ ...s.primaryBtn, fontSize: 11, padding: '6px 12px', opacity: !newEpNum ? 0.5 : 1 }}>
+                          {addingEp ? '...' : '+ Ep'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Add season */}
+              <div style={{ background: '#f9f9f7', border: '0.5px solid #eee', borderRadius: 10, padding: 14 }}>
+                <p style={{ fontSize: 12, fontWeight: 500, color: '#666', marginBottom: 10 }}>Add season</p>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <input type="number" value={newSeasonNum} onChange={e => setNewSeasonNum(e.target.value)}
+                    placeholder="Season #" style={{ ...s.input, width: 90, fontSize: 12 }} min={1} />
+                  <input value={newSeasonTitle} onChange={e => setNewSeasonTitle(e.target.value)}
+                    placeholder="Title (optional)" style={{ ...s.input, flex: 1, minWidth: 120, fontSize: 12 }} />
+                  <button onClick={() => handleAddSeason(selected.id)} disabled={addingSeason || !newSeasonNum}
+                    style={{ ...s.primaryBtn, fontSize: 12, padding: '7px 14px', opacity: !newSeasonNum ? 0.5 : 1 }}>
+                    {addingSeason ? 'Adding...' : '+ Add season'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {selected && (
             <div style={{ borderTop: '0.5px solid #eee', paddingTop: 20 }}>
               <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}>Cast &amp; Crew</h3>
