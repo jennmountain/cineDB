@@ -69,7 +69,7 @@ const sqlStyles = `
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
-    text-align: center;
+    text-align: left;
   }
 
   .sql-query-preview {
@@ -78,8 +78,8 @@ const sqlStyles = `
     margin-top: 2px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal;
-    text-align: center;
+    white-space: nowrap;
+    text-align: left;
     font-family: 'ui-monospace', monospace;
   }
 
@@ -341,8 +341,8 @@ const sqlStyles = `
     font-size: 11px;
     color: #9A9390;
     border-bottom: 1px solid #E4DDD4;
-    white-space: normal;
-    text-align: center;
+    white-space: nowrap;
+    text-align: left;
     background: #F8F6F2;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -504,8 +504,7 @@ export default function SqlPage({ session, profile }) {
     }
   }
 
-  const defaultQueries = queries.filter(q => q.is_default)
-  const myQueries      = queries.filter(q => !q.is_default)
+  const myQueries = queries.filter(q => !q.is_default)
 
   return (
     <>
