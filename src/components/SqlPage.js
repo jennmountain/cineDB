@@ -1,6 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react'
 import supabase from '../config/supabaseClient'
 
+const QUICK_QUERIES = [
+  { label: '🎬 Top 10 Movies',       sql: `select title, genre, release_year, avg_rating, imdb_rating as rt_score from media where type = 'movie' and avg_rating > 0 order by avg_rating desc limit 10;` },
+  { label: '📺 Top 10 TV Shows',     sql: `select title, genre, release_year, avg_rating, seasons, episodes, imdb_rating as rt_score from media where type = 'tv' and avg_rating > 0 order by avg_rating desc limit 10;` },
+  { label: '🍅 RT Score Above 90%',  sql: `select title, type, genre, release_year, imdb_rating as rt_score from media where imdb_rating > 90 order by imdb_rating desc, title;` },
+  { label: '🎭 Most Credited Actors', sql: `select p.name, count(*) as appearances from media_credits mc join people p on p.id = mc.person_id where mc.role = 'actor' group by p.id, p.name order by appearances desc limit 15;` },
+  { label: '🎥 Directors by Rating', sql: `select p.name, count(m.id) as films_directed, round(avg(m.avg_rating), 1) as avg_rating from media_credits mc join people p on p.id = mc.person_id join media m on m.id = mc.media_id where mc.role = 'director' and m.avg_rating > 0 group by p.id, p.name order by avg_rating desc limit 15;` },
+  { label: '⭐ Community Picks',     sql: `select m.title, m.type, m.genre, m.avg_rating, p.username as recommended_by, r.created_at from recommendations r join media m on m.id = r.media_id join profiles p on p.id = r.user_id order by r.created_at desc;` },
+  { label: '📊 Movies by Decade',    sql: `select (release_year / 10 * 10) as decade, count(*) as total, round(avg(avg_rating), 1) as avg_rating from media where type = 'movie' and release_year is not null group by decade order by decade;` },
+  { label: '❤️ Most Favourited',     sql: `select m.title, m.type, count(w.user_id) as favourited_by from watchlist w join media m on m.id = w.media_id where w.is_favourite = true group by m.id, m.title, m.type order by favourited_by desc limit 15;` },
+  { label: '📝 Recent Reviews',      sql: `select p.username, m.title, r.rating, r.content, r.created_at from reviews r join profiles p on p.id = r.user_id join media m on m.id = r.media_id order by r.created_at desc limit 20;` },
+  { label: '🏆 Top Reviewers',       sql: `select p.username, count(r.id) as reviews_written, round(avg(r.rating), 1) as avg_score_given from reviews r join profiles p on p.id = r.user_id group by p.id, p.username order by reviews_written desc;` },
+]
+
 const sqlStyles = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -522,9 +535,12 @@ export default function SqlPage({ session, profile }) {
           {/* Quick query buttons */}
           <div className="sql-quick-bar">
             <span style={{ fontSize: 11, fontWeight: 600, color: '#C4BAB0', letterSpacing: '0.06em', textTransform: 'uppercase', alignSelf: 'center', marginRight: 4 }}>Quick:</span>
-            {quickQueries.length === 0 && (
-              <span style={{ fontSize: 11, color: '#C4BAB0' }}>No quick queries set — admin can add them in the Admin panel.</span>
-            )}
+            {QUICK_QUERIES.map(q => (
+              <button key={q.label} className="sql-quick-btn" onClick={() => loadQuick(q)}>
+                {q.label}
+              </button>
+            ))}
+            {quickQueries.length > 0 && <div className="filter-divider" />}
             {quickQueries.map(q => (
               <button key={q.id} className="sql-quick-btn" onClick={() => loadQuick(q)}>
                 {q.title}
