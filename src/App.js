@@ -13,50 +13,20 @@ import SqlPage from './components/SqlPage'
 import Navbar from './components/Navbar'
 
 const darkModeStyles = `
-  body.dark-mode {
-    --bg: #141414;
-    --surface: #1E1E1E;
-    --border: #2A2A2A;
-    --text: #F0EDE8;
-    --text-muted: #888;
-    --accent: #C8713A;
-  }
+  body.dark-mode { background: #141414 !important; }
 
-  body.dark-mode {
-    background: #141414 !important;
-  }
-  
-  body.dark-mode .wl-stat-value {
-    color: #F0EDE8 !important;
-  }
-
-  body.dark-mode .wl-stat-label {
-    color: #666 !important;
-  }
-
-  body.dark-mode .wl-genre-name {
-    color: #C0BAB4 !important;
-  }
-
-  body.dark-mode .wl-genre-track {
-    background: #2A2A2A !important;
-  }
-
+  /* Layout roots */
   body.dark-mode .browse-root,
   body.dark-mode .wl-root,
   body.dark-mode .rp-root,
   body.dark-mode .hg-root,
   body.dark-mode .adm-root,
   body.dark-mode .sql-root,
-  body.dark-mode .auth-root {
-    background: #141414 !important;
-  }
+  body.dark-mode .auth-root,
+  body.dark-mode .sql-main { background: #141414 !important; }
 
-  body.dark-mode .navbar {
-    background: #1A1A1A !important;
-    border-bottom-color: #2A2A2A !important;
-  }
-
+  /* Navbar */
+  body.dark-mode .navbar { background: #1A1A1A !important; border-bottom-color: #2A2A2A !important; }
   body.dark-mode .navbar-logo-mark { color: #F0EDE8 !important; }
   body.dark-mode .navbar-link { color: #888 !important; }
   body.dark-mode .navbar-link:hover { background: #2A2A2A !important; color: #F0EDE8 !important; }
@@ -67,217 +37,126 @@ const darkModeStyles = `
   body.dark-mode .navbar-dropdown-item:hover { background: #2A2A2A !important; }
   body.dark-mode .navbar-username-chip { color: #666 !important; }
 
-  body.dark-mode .media-card,
-  body.dark-mode .wl-stat-card,
-  body.dark-mode .wl-genre-bar,
-  body.dark-mode .adm-form-card,
-  body.dark-mode .lb-card,
-  body.dark-mode .adm-sidebar,
-  body.dark-mode .sql-sidebar,
-  body.dark-mode .sql-editor-wrap,
-  body.dark-mode .sql-table-wrap {
-    background: #1E1E1E !important;
-    border-color: #2A2A2A !important;
-  }
+  /* Media cards */
+  body.dark-mode .media-card { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .media-card-title { color: #F0EDE8 !important; }
+  body.dark-mode .media-card-poster { background: #2A2A2A !important; }
+  body.dark-mode .media-card-year-genre, body.dark-mode .media-card-imdb { color: #666 !important; }
 
-  body.dark-mode .media-card-title,
-  body.dark-mode .wl-page-title,
-  body.dark-mode .rp-page-title,
-  body.dark-mode .hg-title,
-  body.dark-mode .adm-panel-title,
-  body.dark-mode .adm-overview-title,
-  body.dark-mode .adm-list-title,
-  body.dark-mode .lb-section-title,
-  body.dark-mode .sql-results-label,
-  body.dark-mode .sql-editor-label {
-    color: #F0EDE8 !important;
-  }
+  /* Browse */
+  body.dark-mode .search-input { color: #F0EDE8 !important; border-bottom-color: #3A3A3A !important; }
+  body.dark-mode .results-meta { color: #666 !important; }
+  body.dark-mode .filter-pill, body.dark-mode .mood-btn { border-color: #3A3A3A !important; color: #888 !important; background: transparent !important; }
+  body.dark-mode .filter-pill.active { background: #F0EDE8 !important; border-color: #F0EDE8 !important; color: #141414 !important; }
+  body.dark-mode .filter-select { background-color: transparent !important; border-color: #3A3A3A !important; color: #888 !important; }
+  body.dark-mode .skeleton-card { background: #2A2A2A !important; }
+  body.dark-mode .loading-grid .skeleton-poster { background: #333 !important; }
+  body.dark-mode .browse-title { color: #C8713A !important; }
 
-  body.dark-mode .media-card-poster,
-  body.dark-mode .adm-grid-poster,
-  body.dark-mode .adm-person-avatar,
-  body.dark-mode .hg-skeleton,
-  body.dark-mode .skeleton-card {
-    background: #2A2A2A !important;
-  }
-
-  body.dark-mode .search-input {
-    color: #F0EDE8 !important;
-    border-bottom-color: #3A3A3A !important;
-  }
-
-  body.dark-mode .adm-field input,
-  body.dark-mode .adm-field select,
-  body.dark-mode .adm-field textarea,
-  body.dark-mode .sql-textarea,
-  body.dark-mode .sql-title-input,
-  body.dark-mode .adm-search,
-  body.dark-mode .adm-overview-search {
-    background: #2A2A2A !important;
-    border-color: #3A3A3A !important;
-    color: #F0EDE8 !important;
-  }
-
-  body.dark-mode .filter-pill,
-  body.dark-mode .mood-btn,
-  body.dark-mode .wl-tab,
-  body.dark-mode .rp-filter-pill,
-  body.dark-mode .adm-overview-pill,
-  body.dark-mode .sql-quick-btn,
-  body.dark-mode .sql-save-btn,
-  body.dark-mode .wl-share-btn {
-    border-color: #3A3A3A !important;
-    color: #888 !important;
-    background: transparent !important;
-  }
-
-  body.dark-mode .filter-pill.active,
-  body.dark-mode .wl-tab.active,
-  body.dark-mode .rp-filter-pill.active,
-  body.dark-mode .adm-overview-pill.active {
-    background: #F0EDE8 !important;
-    border-color: #F0EDE8 !important;
-    color: #141414 !important;
-  }
-
-  body.dark-mode .results-meta,
-  body.dark-mode .wl-meta,
-  body.dark-mode .hg-meta,
-  body.dark-mode .rp-page-sub,
-  body.dark-mode .hg-sub,
-  body.dark-mode .media-card-year-genre,
-  body.dark-mode .media-card-imdb,
-  body.dark-mode .adm-list-meta,
-  body.dark-mode .lb-section-sub {
-    color: #666 !important;
-  }
-
-  body.dark-mode .filter-select {
-    background-color: transparent !important;
-    border-color: #3A3A3A !important;
-    color: #888 !important;
-  }
-
-  body.dark-mode .sql-table th { background: #1A1A1A !important; color: #666 !important; }
-  body.dark-mode .sql-table td { color: #C0BAB4 !important; border-color: #2A2A2A !important; }
-  body.dark-mode .sql-table tr:hover td { background: #242424 !important; }
-
-  body.dark-mode .adm-list-item:hover { background: #242424 !important; }
-  body.dark-mode .adm-list-item.active { background: #2A1A10 !important; }
-
+  /* My List */
+  body.dark-mode .wl-page-label { color: #C8713A !important; }
+  body.dark-mode .wl-page-title { color: #F0EDE8 !important; }
+  body.dark-mode .wl-stat-card { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .wl-stat-value { color: #F0EDE8 !important; }
+  body.dark-mode .wl-stat-label { color: #666 !important; }
+  body.dark-mode .wl-genre-bar { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .wl-genre-name { color: #C0BAB4 !important; }
+  body.dark-mode .wl-genre-track { background: #2A2A2A !important; }
+  body.dark-mode .wl-tab { border-color: #3A3A3A !important; color: #888 !important; background: transparent !important; }
+  body.dark-mode .wl-tab.active { background: #F0EDE8 !important; border-color: #F0EDE8 !important; color: #141414 !important; }
+  body.dark-mode .wl-meta { color: #666 !important; }
+  body.dark-mode .wl-share-btn { border-color: #3A3A3A !important; color: #888 !important; }
   body.dark-mode .wl-modal { background: #1E1E1E !important; }
   body.dark-mode .wl-modal-title { color: #F0EDE8 !important; }
   body.dark-mode .wl-modal-list { background: #2A2A2A !important; border-color: #3A3A3A !important; color: #C0BAB4 !important; }
 
-  body.dark-mode .adm-panel {
-    background: #141414 !important;
-  }
+  /* Picks / Recommendations */
+  body.dark-mode .rp-page-label { color: #C8713A !important; }
+  body.dark-mode .rp-page-title { color: #F0EDE8 !important; }
+  body.dark-mode .rp-page-sub { color: #666 !important; }
+  body.dark-mode .rp-filter-pill { border-color: #3A3A3A !important; color: #888 !important; background: transparent !important; }
+  body.dark-mode .rp-filter-pill.active { background: #F0EDE8 !important; border-color: #F0EDE8 !important; color: #141414 !important; }
+  body.dark-mode .lb-card { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .lb-section-title { color: #F0EDE8 !important; }
+  body.dark-mode .lb-section-sub { color: #666 !important; }
+  body.dark-mode .lb-name { color: #C0BAB4 !important; }
+  body.dark-mode .lb-media-title { color: #C0BAB4 !important; }
+  body.dark-mode .lb-media-meta { color: #555 !important; }
+  body.dark-mode .lb-row { border-bottom-color: #2A2A2A !important; }
+  body.dark-mode .lb-media-row { border-bottom-color: #2A2A2A !important; }
 
-  body.dark-mode .adm-tabs {
-    background: #1A1A1A !important;
-    border-bottom-color: #2A2A2A !important;
-  }
+  /* Hidden Gems */
+  body.dark-mode .hg-label { color: #C8713A !important; }
+  body.dark-mode .hg-title { color: #F0EDE8 !important; }
+  body.dark-mode .hg-sub { color: #666 !important; }
+  body.dark-mode .hg-meta { color: #666 !important; }
+  body.dark-mode .hg-chip { background: #1E1E1E !important; border-color: #2A2A2A !important; color: #888 !important; }
+  body.dark-mode .hg-skeleton { background: #2A2A2A !important; }
 
-  body.dark-mode .adm-tab {
-    color: #666 !important;
-  }
+  /* SQL Explorer */
+  body.dark-mode .sql-sidebar { background: #1A1A1A !important; border-right-color: #2A2A2A !important; }
+  body.dark-mode .sql-sidebar-section { color: #555 !important; }
+  body.dark-mode .sql-query-item { border-bottom-color: #222 !important; }
+  body.dark-mode .sql-query-item:hover { background: #242424 !important; }
+  body.dark-mode .sql-query-item.active { background: #2A1A10 !important; border-left-color: #C8713A !important; }
+  body.dark-mode .sql-query-title { color: #C0BAB4 !important; }
+  body.dark-mode .sql-query-preview { color: #444 !important; }
+  body.dark-mode .sql-quick-bar { background: #1A1A1A !important; border-bottom-color: #2A2A2A !important; }
+  body.dark-mode .sql-quick-btn { border-color: #3A3A3A !important; color: #888 !important; }
+  body.dark-mode .sql-quick-btn:hover { border-color: #C8713A !important; color: #C8713A !important; background: #1A0F08 !important; }
+  body.dark-mode .sql-editor-wrap { background: #1A1A1A !important; border-bottom-color: #2A2A2A !important; }
+  body.dark-mode .sql-editor-label { color: #F0EDE8 !important; }
+  body.dark-mode .sql-shortcut { background: #2A2A2A !important; color: #666 !important; }
+  body.dark-mode .sql-select-badge { background: #2A2A2A !important; color: #666 !important; }
+  body.dark-mode .sql-textarea { background: #141414 !important; border-color: #3A3A3A !important; color: #C0BAB4 !important; }
+  body.dark-mode .sql-title-input { background: #2A2A2A !important; border-color: #3A3A3A !important; color: #F0EDE8 !important; }
+  body.dark-mode .sql-save-btn { border-color: #3A3A3A !important; color: #888 !important; }
+  body.dark-mode .sql-results { background: #141414 !important; }
+  body.dark-mode .sql-results-label { color: #F0EDE8 !important; }
+  body.dark-mode .sql-table-wrap { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .sql-table th { background: #1A1A1A !important; color: #666 !important; border-bottom-color: #2A2A2A !important; }
+  body.dark-mode .sql-table td { color: #C0BAB4 !important; border-bottom-color: #222 !important; }
+  body.dark-mode .sql-table tr:hover td { background: #242424 !important; }
+  body.dark-mode .sql-empty-state { color: #444 !important; }
+  body.dark-mode .sql-error { background: #1A0F08 !important; border-color: #3A2010 !important; color: #C8713A !important; }
 
-  body.dark-mode .adm-tab.active {
-    color: #F0EDE8 !important;
-    border-bottom-color: #C8713A !important;
-  }
+  /* Admin */
+  body.dark-mode .adm-tabs { background: #1A1A1A !important; border-bottom-color: #2A2A2A !important; }
+  body.dark-mode .adm-tab { color: #666 !important; }
+  body.dark-mode .adm-tab.active { color: #F0EDE8 !important; border-bottom-color: #C8713A !important; }
+  body.dark-mode .adm-sidebar { background: #1A1A1A !important; border-right-color: #2A2A2A !important; }
+  body.dark-mode .adm-sidebar-header { border-bottom-color: #2A2A2A !important; }
+  body.dark-mode .adm-search { background: #2A2A2A !important; border-color: #3A3A3A !important; color: #F0EDE8 !important; }
+  body.dark-mode .adm-list-item:hover { background: #242424 !important; }
+  body.dark-mode .adm-list-item.active { background: #2A1A10 !important; border-left-color: #C8713A !important; }
+  body.dark-mode .adm-list-title { color: #C0BAB4 !important; }
+  body.dark-mode .adm-list-meta { color: #555 !important; }
+  body.dark-mode .adm-overview { background: #141414 !important; }
+  body.dark-mode .adm-overview-title { color: #F0EDE8 !important; }
+  body.dark-mode .adm-overview-label { color: #C8713A !important; }
+  body.dark-mode .adm-overview-pill { border-color: #3A3A3A !important; color: #888 !important; background: transparent !important; }
+  body.dark-mode .adm-overview-pill.active { background: #F0EDE8 !important; border-color: #F0EDE8 !important; color: #141414 !important; }
+  body.dark-mode .adm-overview-search { background: #2A2A2A !important; border-color: #3A3A3A !important; color: #F0EDE8 !important; }
+  body.dark-mode .adm-grid-card, body.dark-mode .adm-person-card { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .adm-grid-title { color: #F0EDE8 !important; }
+  body.dark-mode .adm-grid-meta { color: #555 !important; }
+  body.dark-mode .adm-person-name { color: #F0EDE8 !important; }
+  body.dark-mode .adm-person-meta { color: #555 !important; }
+  body.dark-mode .adm-add-new-card { border-color: #3A3A3A !important; color: #555 !important; }
+  body.dark-mode .adm-add-new-card:hover { border-color: #C8713A !important; color: #C8713A !important; background: #1A0F08 !important; }
+  body.dark-mode .adm-panel { background: #141414 !important; }
+  body.dark-mode .adm-panel-label { color: #C8713A !important; }
+  body.dark-mode .adm-panel-title { color: #F0EDE8 !important; }
+  body.dark-mode .adm-close-btn { background: #2A2A2A !important; color: #888 !important; }
+  body.dark-mode .adm-form-card { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .adm-form-card-title { color: #555 !important; }
+  body.dark-mode .adm-field label { color: #666 !important; }
+  body.dark-mode .adm-field input, body.dark-mode .adm-field select, body.dark-mode .adm-field textarea { background: #2A2A2A !important; border-color: #3A3A3A !important; color: #F0EDE8 !important; }
+  body.dark-mode .adm-season-card { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+  body.dark-mode .adm-season-header { background: #242424 !important; }
+  body.dark-mode .adm-credit-item { background: #2A2A2A !important; border-color: #3A3A3A !important; }
 
-  body.dark-mode .adm-overview {
-    background: #141414 !important;
-  }
-
-  body.dark-mode .adm-grid-card,
-  body.dark-mode .adm-person-card,
-  body.dark-mode .adm-season-card,
-  body.dark-mode .adm-credit-item {
-    background: #1E1E1E !important;
-    border-color: #2A2A2A !important;
-  }
-
-  body.dark-mode .adm-grid-title,
-  body.dark-mode .adm-panel-title,
-  body.dark-mode .adm-person-name,
-  body.dark-mode .adm-list-title {
-    color: #F0EDE8 !important;
-  }
-
-  body.dark-mode .adm-add-new-card {
-    border-color: #3A3A3A !important;
-    color: #555 !important;
-  }
-
-  body.dark-mode .adm-add-new-card:hover {
-    border-color: #C8713A !important;
-    color: #C8713A !important;
-    background: #1A0F08 !important;
-  }
-
-  body.dark-mode .adm-form-card-title {
-    color: #666 !important;
-  }
-
-  body.dark-mode .adm-field label {
-    color: #666 !important;
-  }
-
-  body.dark-mode .adm-season-header {
-    background: #242424 !important;
-  }
-  
-  body.dark-mode .adm-root,
-  body.dark-mode .sql-main {
-    background: #141414 !important;
-  }
-
-  /* Detail page */
-  body.dark-mode .media-card,
-  body.dark-mode [style*="maxWidth: 900"],
-  body.dark-mode [style*="max-width: 900"] {
-    background: #141414 !important;
-  }
-
-  body.dark-mode [style*="background: #F8F6F2"],
-  body.dark-mode [style*="background: '#F8F6F2'"] {
-    background: #141414 !important;
-  }
-
-  body.dark-mode [style*="color: '#1C1C1A'"],
-  body.dark-mode [style*="color: #1C1C1A"] {
-    color: #F0EDE8 !important;
-  }
-
-  body.dark-mode [style*="color: '#4A4440'"],
-  body.dark-mode [style*="color: #4A4440"] {
-    color: #C0BAB4 !important;
-  }
-
-  body.dark-mode [style*="color: '#9A9390'"],
-  body.dark-mode [style*="color: #9A9390"] {
-    color: #666 !important;
-  }
-
-  body.dark-mode [style*="borderTop: '1px solid #E4DDD4'"],
-  body.dark-mode [style*="border: '1px solid #E4DDD4'"],
-  body.dark-mode [style*="borderBottom: '1px solid #F0EBE4'"] {
-    border-color: #2A2A2A !important;
-  }
-
-  body.dark-mode [style*="background: '#fff'"],
-  body.dark-mode [style*="background: '#ffffff'"],
-  body.dark-mode [style*="background: #fff"] {
-    background: #1E1E1E !important;
-  }
-
-  body.dark-mode [style*="border: '1px solid #EDE9E3'"],
-  body.dark-mode [style*="border: '1.5px solid #D4C9BA'"] {
-    border-color: #2A2A2A !important;
-  }
-
+  /* Inputs globally */
   body.dark-mode textarea,
   body.dark-mode input[type="text"],
   body.dark-mode input[type="email"],
@@ -286,90 +165,6 @@ const darkModeStyles = `
     background: #2A2A2A !important;
     color: #F0EDE8 !important;
     border-color: #3A3A3A !important;
-  }
-
-  /* Person page, detail page containers */
-  body.dark-mode div[style*="minHeight: '100vh'"],
-  body.dark-mode div[style*="min-height: 100vh"] {
-    background: #141414 !important;
-  }
-
-  /* Detail page title and stats */
-  body.dark-mode h1,
-  body.dark-mode h2,
-  body.dark-mode h3 {
-    color: #F0EDE8 !important;
-  }
-
-  body.dark-mode strong {
-    color: #F0EDE8 !important;
-  }
-
-  /* Detail page and review cards */
-  body.dark-mode div[style*="background: #fff"],
-  body.dark-mode div[style*="background: '#fff'"],
-  body.dark-mode div[style*='background: "#fff"'] {
-    background: #1E1E1E !important;
-    color: #C0BAB4 !important;
-  }
-
-  /* You might also like cards */
-  body.dark-mode div[style*="background: '#fff'"][style*="borderRadius: 10"],
-  body.dark-mode div[style*="background: #fff"][style*="border-radius"] {
-    background: #1E1E1E !important;
-    border-color: #2A2A2A !important;
-  }
-
-  /* SQL quick bar and editor wrap */
-  body.dark-mode .sql-quick-bar {
-    background: #1A1A1A !important;
-    border-bottom-color: #2A2A2A !important;
-  }
-
-  body.dark-mode .sql-quick-btn {
-    border-color: #3A3A3A !important;
-    color: #888 !important;
-  }
-
-  body.dark-mode .sql-editor-wrap {
-    background: #1A1A1A !important;
-    border-bottom-color: #2A2A2A !important;
-  }
-
-  body.dark-mode .sql-select-badge {
-    background: #2A2A2A !important;
-    color: #666 !important;
-  }
-
-  body.dark-mode .sql-action-row input,
-  body.dark-mode .sql-title-input {
-    background: #2A2A2A !important;
-    border-color: #3A3A3A !important;
-    color: #F0EDE8 !important;
-  }
-
-  /* Cast names invisible fix */
-  body.dark-mode button[style*="color: '#1C1C1A'"],
-  body.dark-mode button[style*="textDecoration: 'underline'"] {
-    color: #C8713A !important;
-  }
-
-  /* Review cards */
-  body.dark-mode div[style*="border: '1px solid #E4DDD4'"][style*="borderRadius: 12"] {
-    background: #1E1E1E !important;
-    border-color: #2A2A2A !important;
-  }
-
-  /* Year/genre/rating text */
-  body.dark-mode span[style*="color: '#1C1C1A'"],
-  body.dark-mode p[style*="color: '#4A4440'"],
-  body.dark-mode div[style*="color: '#4A4440'"] {
-    color: #C0BAB4 !important;
-  }
-
-  /* Fix overview text */
-  body.dark-mode p[style*="color: '#4A4440'"] {
-    color: #9A9390 !important;
   }
 `
 

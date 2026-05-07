@@ -54,6 +54,41 @@ join media m on m.id = r.media_id
 join profiles p on p.id = r.user_id
 order by r.created_at desc;`,
   },
+  {
+    label: '📊 Movies by Decade',
+    sql: `select (release_year / 10 * 10) as decade, count(*) as total, round(avg(avg_rating), 1) as avg_rating
+from media
+where type = 'movie' and release_year is not null
+group by decade
+order by decade;`,
+  },
+  {
+    label: '❤️ Most Favourited',
+    sql: `select m.title, m.type, count(w.user_id) as favourited_by
+from watchlist w
+join media m on m.id = w.media_id
+where w.is_favourite = true
+group by m.id, m.title, m.type
+order by favourited_by desc
+limit 15;`,
+  },
+  {
+    label: '📝 Recent Reviews',
+    sql: `select p.username, m.title, r.rating, r.content, r.created_at
+from reviews r
+join profiles p on p.id = r.user_id
+join media m on m.id = r.media_id
+order by r.created_at desc
+limit 20;`,
+  },
+  {
+    label: '🏆 Top Reviewers',
+    sql: `select p.username, count(r.id) as reviews_written, round(avg(r.rating), 1) as avg_score_given
+from reviews r
+join profiles p on p.id = r.user_id
+group by p.id, p.username
+order by reviews_written desc;`,
+  },
 ]
 
 const sqlStyles = `
@@ -543,22 +578,21 @@ export default function SqlPage({ session, profile }) {
         {/* Sidebar */}
         <div className="sql-sidebar">
           <div className="sql-sidebar-list">
-            {defaultQueries.length > 0 && (
+              {myQueries.length > 0 && (
               <>
-                <div className="sql-sidebar-section">Default queries</div>
-                {defaultQueries.map(q => (
-                  <QueryItem key={q.id} query={q} active={activeId === q.id} onClick={() => selectQuery(q)} />
+                <div className="sql-sidebar-section">My Saved Queries</div>
+                {myQueries.map(q => (
+                  <QueryItem key={q.id} query={q} active={activeId === q.id}
+                    onClick={() => selectQuery(q)} onDelete={e => deleteQuery(q.id, e)} />
                 ))}
               </>
             )}
-            <div className="sql-sidebar-section">My queries</div>
             {myQueries.length === 0 && (
-              <p style={{ padding: '10px 14px', fontSize: 12, color: '#C4BAB0' }}>None saved yet</p>
+              <div style={{ padding: '20px 14px', textAlign: 'center' }}>
+                <div style={{ fontSize: 24, marginBottom: 8 }}>💾</div>
+                <p style={{ fontSize: 12, color: '#C4BAB0', lineHeight: 1.5 }}>No saved queries yet.<br/>Run a query and save it.</p>
+              </div>
             )}
-            {myQueries.map(q => (
-              <QueryItem key={q.id} query={q} active={activeId === q.id}
-                onClick={() => selectQuery(q)} onDelete={e => deleteQuery(q.id, e)} />
-            ))}
           </div>
         </div>
 
@@ -666,8 +700,8 @@ function QueryItem({ query, active, onClick, onDelete }) {
   return (
     <div className={`sql-query-item${active ? ' active' : ''}`} onClick={onClick}>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div className="sql-query-title">{query.title}</div>
-        <div className="sql-query-preview">{query.sql.slice(0, 40)}…</div>
+        <div className="sql-query-title" style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{query.title}</div>
+        <div className="sql-query-preview">{query.sql.trim().split('\n')[0].slice(0, 45)}…</div>
       </div>
       {onDelete && (
         <button className="sql-delete-btn" onClick={onDelete} title="Delete">✕</button>
