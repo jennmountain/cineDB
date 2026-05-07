@@ -542,6 +542,327 @@ const adminStyles = `
     margin-top: 4px;
     display: block;
   }
+  /* Overview grid */
+  .adm-overview {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 28px;
+    background: #F8F6F2;
+  }
+
+  .adm-overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .adm-overview-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: #1C1C1A;
+    font-weight: 400;
+  }
+
+  .adm-overview-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #B5622A;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .adm-overview-filters {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .adm-overview-pill {
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1.5px solid #D4C9BA;
+    background: transparent;
+    color: #6B6660;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .adm-overview-pill:hover {
+    border-color: #B5622A;
+    color: #B5622A;
+  }
+
+  .adm-overview-pill.active {
+    background: #1C1C1A;
+    border-color: #1C1C1A;
+    color: #F8F6F2;
+  }
+
+  .adm-overview-search {
+    border: 1.5px solid #D4C9BA;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    color: #1C1C1A;
+    background: #fff;
+    transition: border-color 0.15s;
+    width: 180px;
+  }
+
+  .adm-overview-search:focus {
+    border-color: #B5622A;
+  }
+
+  .adm-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  @media (max-width: 1300px) { .adm-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  @media (max-width: 1000px) { .adm-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (max-width: 700px)  { .adm-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .adm-grid-card {
+    background: #fff;
+    border: 1px solid #EDE9E3;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+
+  .adm-grid-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(28,28,26,0.08);
+  }
+
+  .adm-grid-poster {
+    height: 160px;
+    background: #EDE9E3;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .adm-grid-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .adm-grid-poster-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #C4BAB0;
+    font-size: 28px;
+  }
+
+  .adm-grid-type-badge {
+    position: absolute;
+    top: 7px;
+    left: 7px;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 100px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .adm-grid-mpa {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .adm-grid-body {
+    padding: 10px 11px 11px;
+  }
+
+  .adm-grid-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1C1C1A;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 3px;
+  }
+
+  .adm-grid-meta {
+    font-size: 10px;
+    color: #9A9390;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .adm-grid-delete {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(28,28,26,0.55);
+    color: #F8F6F2;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+  }
+
+  .adm-grid-card:hover .adm-grid-delete {
+    opacity: 1;
+  }
+
+  .adm-grid-delete:hover {
+    background: #c0392b;
+  }
+
+  .adm-people-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  @media (max-width: 1300px) { .adm-people-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  @media (max-width: 1000px) { .adm-people-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  .adm-person-card {
+    background: #fff;
+    border: 1px solid #EDE9E3;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    padding: 16px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .adm-person-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(28,28,26,0.08);
+  }
+
+  .adm-person-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #EDE9E3;
+    overflow: hidden;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .adm-person-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .adm-person-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1C1C1A;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .adm-person-meta {
+    font-size: 10px;
+    color: #9A9390;
+    margin-top: 2px;
+  }
+
+  .adm-person-delete {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(28,28,26,0.5);
+    color: #F8F6F2;
+    border: none;
+    cursor: pointer;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+  }
+
+  .adm-person-card:hover .adm-person-delete {
+    opacity: 1;
+  }
+
+  .adm-person-delete:hover {
+    background: #c0392b;
+  }
+
+  .adm-add-new-card {
+    background: transparent;
+    border: 2px dashed #D4C9BA;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #C4BAB0;
+    transition: all 0.15s;
+    min-height: 120px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    gap: 6px;
+  }
+
+  .adm-add-new-card:hover {
+    border-color: #B5622A;
+    color: #B5622A;
+    background: #FDF0E8;
+  }
+
 `
 
 export default function AdminPage() {
@@ -778,7 +1099,7 @@ function MediaTab() {
   return (
     <>
       {/* Sidebar */}
-      <div className="adm-sidebar">
+      <div className={`adm-sidebar${panelOpen ? '' : ' collapsed'}`}>
         <div className="adm-sidebar-header">
           <input className="adm-search" value={search}
             onChange={e => setSearch(e.target.value)} placeholder="Search titles…" />
@@ -826,6 +1147,59 @@ function MediaTab() {
           )}
         </div>
       </div>
+
+      {/* Overview grid when no panel open */}
+      {!panelOpen && (
+        <div className="adm-overview">
+          <div className="adm-overview-header">
+            <div>
+              <div className="adm-overview-label">Media Library</div>
+              <div className="adm-overview-title">All Titles</div>
+            </div>
+            <div className="adm-overview-filters">
+              {[['all', 'All'], ['movie', 'Films'], ['tv', 'TV']].map(([v, l]) => (
+                <button key={v} onClick={() => setTypeFilter(v)}
+                  className={`adm-overview-pill${typeFilter === v ? ' active' : ''}`}>{l}</button>
+              ))}
+              <input className="adm-overview-search" value={search}
+                onChange={e => setSearch(e.target.value)} placeholder="Search…" />
+              <button className="adm-add-btn" onClick={openAdd}>+ Add title</button>
+            </div>
+          </div>
+          <div className="adm-grid">
+            <div className="adm-add-new-card" onClick={openAdd}>
+              <span style={{ fontSize: 22 }}>＋</span>
+              Add title
+            </div>
+            {filtered.map(item => (
+              <div key={item.id} className="adm-grid-card" onClick={() => openEdit(item)}>
+                <div className="adm-grid-poster">
+                  {getPosterUrl(item.poster_url)
+                    ? <img src={getPosterUrl(item.poster_url)} alt={item.title} />
+                    : <div className="adm-grid-poster-empty">🎬</div>}
+                  <span className="adm-grid-type-badge" style={{
+                    background: item.type === 'movie' ? 'rgba(181,98,42,0.9)' : 'rgba(28,28,26,0.75)',
+                    color: '#fff',
+                  }}>
+                    {item.type === 'movie' ? 'Film' : 'TV'}
+                  </span>
+                  {item.mpa_rating && <span className="adm-grid-mpa">{item.mpa_rating}</span>}
+                </div>
+                <div className="adm-grid-body">
+                  <div className="adm-grid-title">{item.title}</div>
+                  <div className="adm-grid-meta">
+                    {item.release_year || '—'}
+                    {item.genre ? ` · ${item.genre}` : ''}
+                    {item.imdb_rating ? ` · 🍅${item.imdb_rating}%` : ''}
+                  </div>
+                </div>
+                <button className="adm-grid-delete"
+                  onClick={e => { e.stopPropagation(); handleDelete(item) }}>✕</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Panel */}
       {panelOpen && (
@@ -1142,7 +1516,7 @@ function PeopleTab() {
 
   return (
     <>
-      <div className="adm-sidebar">
+      <div className={`adm-sidebar${panelOpen ? '' : ' collapsed'}`}>
         <div className="adm-sidebar-header">
           <input className="adm-search" value={search}
             onChange={e => setSearch(e.target.value)} placeholder="Search people…" />
@@ -1176,6 +1550,45 @@ function PeopleTab() {
           {!loading && filtered.length === 0 && <p style={{ padding: 20, color: '#C4BAB0', fontSize: 13 }}>No results</p>}
         </div>
       </div>
+
+      {!panelOpen && (
+        <div className="adm-overview">
+          <div className="adm-overview-header">
+            <div>
+              <div className="adm-overview-label">People</div>
+              <div className="adm-overview-title">Cast &amp; Crew</div>
+            </div>
+            <div className="adm-overview-filters">
+              <input className="adm-overview-search" value={search}
+                onChange={e => setSearch(e.target.value)} placeholder="Search…" />
+              <button className="adm-add-btn" onClick={openAdd}>+ Add person</button>
+            </div>
+          </div>
+          <div className="adm-people-grid">
+            <div className="adm-add-new-card" onClick={openAdd}>
+              <span style={{ fontSize: 22 }}>＋</span>
+              Add person
+            </div>
+            {filtered.map(person => (
+              <div key={person.id} className="adm-person-card" onClick={() => openEdit(person)}>
+                <div className="adm-person-avatar">
+                  {getPhotoUrl(person.photo_url)
+                    ? <img src={getPhotoUrl(person.photo_url)} alt={person.name} />
+                    : '👤'}
+                </div>
+                <div className="adm-person-name">{person.name}</div>
+                <div className="adm-person-meta">
+                  {person.born_year ? `b. ${person.born_year}` : ''}
+                  {person.born_year && person.died_year ? ' – ' : ''}
+                  {person.died_year ? `d. ${person.died_year}` : ''}
+                </div>
+                <button className="adm-person-delete"
+                  onClick={e => { e.stopPropagation(); handleDelete(person) }}>✕</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {panelOpen && (
         <div className="adm-panel">
