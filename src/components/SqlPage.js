@@ -1,19 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import supabase from '../config/supabaseClient'
 
-const QUICK_QUERIES = [
-  { label: '🎬 Top 10 Movies',       sql: `select title, genre, release_year, avg_rating, imdb_rating as rt_score from media where type = 'movie' and avg_rating > 0 order by avg_rating desc limit 10;` },
-  { label: '📺 Top 10 TV Shows',     sql: `select title, genre, release_year, avg_rating, seasons, episodes, imdb_rating as rt_score from media where type = 'tv' and avg_rating > 0 order by avg_rating desc limit 10;` },
-  { label: '🍅 RT Score Above 90%',  sql: `select title, type, genre, release_year, imdb_rating as rt_score from media where imdb_rating > 90 order by imdb_rating desc, title;` },
-  { label: '🎭 Most Credited Actors', sql: `select p.name, count(*) as appearances from media_credits mc join people p on p.id = mc.person_id where mc.role = 'actor' group by p.id, p.name order by appearances desc limit 15;` },
-  { label: '🎥 Directors by Rating', sql: `select p.name, count(m.id) as films_directed, round(avg(m.avg_rating), 1) as avg_rating from media_credits mc join people p on p.id = mc.person_id join media m on m.id = mc.media_id where mc.role = 'director' and m.avg_rating > 0 group by p.id, p.name order by avg_rating desc limit 15;` },
-  { label: '⭐ Community Picks',     sql: `select m.title, m.type, m.genre, m.avg_rating, p.username as recommended_by, r.created_at from recommendations r join media m on m.id = r.media_id join profiles p on p.id = r.user_id order by r.created_at desc;` },
-  { label: '📊 Movies by Decade',    sql: `select (release_year / 10 * 10) as decade, count(*) as total, round(avg(avg_rating), 1) as avg_rating from media where type = 'movie' and release_year is not null group by decade order by decade;` },
-  { label: '❤️ Most Favourited',     sql: `select m.title, m.type, count(w.user_id) as favourited_by from watchlist w join media m on m.id = w.media_id where w.is_favourite = true group by m.id, m.title, m.type order by favourited_by desc limit 15;` },
-  { label: '📝 Recent Reviews',      sql: `select p.username, m.title, r.rating, r.content, r.created_at from reviews r join profiles p on p.id = r.user_id join media m on m.id = r.media_id order by r.created_at desc limit 20;` },
-  { label: '🏆 Top Reviewers',       sql: `select p.username, count(r.id) as reviews_written, round(avg(r.rating), 1) as avg_score_given from reviews r join profiles p on p.id = r.user_id group by p.id, p.username order by reviews_written desc;` },
-]
-
 const sqlStyles = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -81,7 +68,8 @@ const sqlStyles = `
     color: #1C1C1A;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
   }
 
   .sql-query-preview {
@@ -90,7 +78,8 @@ const sqlStyles = `
     margin-top: 2px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
     font-family: 'ui-monospace', monospace;
   }
 
@@ -121,12 +110,24 @@ const sqlStyles = `
 
   /* Quick query buttons */
   .sql-quick-bar {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    padding: 12px 20px;
+    padding: 10px 20px;
     border-bottom: 1px solid #E4DDD4;
     background: #fff;
+  }
+
+  .sql-quick-bar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #C4BAB0;
+    margin-bottom: 8px;
+  }
+
+  .sql-quick-btns {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
   }
 
   .sql-quick-btn {
@@ -140,7 +141,8 @@ const sqlStyles = `
     cursor: pointer;
     font-family: 'DM Sans', sans-serif;
     transition: all 0.15s;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
   }
 
   .sql-quick-btn:hover {
@@ -339,7 +341,8 @@ const sqlStyles = `
     font-size: 11px;
     color: #9A9390;
     border-bottom: 1px solid #E4DDD4;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
     background: #F8F6F2;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -352,7 +355,8 @@ const sqlStyles = `
     max-width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
   }
 
   .sql-table tr:last-child td {
@@ -533,20 +537,18 @@ export default function SqlPage({ session, profile }) {
         <div className="sql-main">
 
           {/* Quick query buttons */}
-          <div className="sql-quick-bar">
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#C4BAB0', letterSpacing: '0.06em', textTransform: 'uppercase', alignSelf: 'center', marginRight: 4 }}>Quick:</span>
-            {QUICK_QUERIES.map(q => (
-              <button key={q.label} className="sql-quick-btn" onClick={() => loadQuick(q)}>
-                {q.label}
-              </button>
-            ))}
-            {quickQueries.length > 0 && <div className="filter-divider" />}
-            {quickQueries.map(q => (
-              <button key={q.id} className="sql-quick-btn" onClick={() => loadQuick(q)}>
-                {q.title}
-              </button>
-            ))}
-          </div>
+          {quickQueries.length > 0 && (
+            <div className="sql-quick-bar">
+              <div className="sql-quick-bar-label">Quick queries</div>
+              <div className="sql-quick-btns">
+                {quickQueries.map(q => (
+                  <button key={q.id} className="sql-quick-btn" onClick={() => loadQuick(q)}>
+                    {q.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Editor */}
           <div className="sql-editor-wrap">
