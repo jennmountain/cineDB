@@ -11,7 +11,7 @@ const ROLE_COLORS = {
   producer: { bg: '#EFF6FF', color: '#1E40AF' },
   actor:    { bg: '#FAF5FF', color: '#6B21A8' },
 }
-const EMPTY_MEDIA_FORM  = { title: '', type: 'movie', genre: '', overview: '', release_year: '', end_year: '', runtime_minutes: '', mpa_rating: '' }
+const EMPTY_MEDIA_FORM  = { title: '', type: 'movie', genre: '', overview: '', release_year: '', end_year: '', runtime_minutes: '', mpa_rating: '', imdb_rating: '' }
 const EMPTY_PERSON_FORM = { name: '', bio: '', born_year: '', died_year: '' }
 
 function getPosterUrl(posterUrl) {
@@ -112,6 +112,7 @@ function MediaTab() {
       end_year:        item.end_year        || '',
       runtime_minutes: item.runtime_minutes || '',
       mpa_rating:      item.mpa_rating      || '',
+      imdb_rating:     item.imdb_rating     || '',
     })
     setPosterFile(null)
     setPosterPreview(getPosterUrl(item.poster_url))
@@ -156,6 +157,7 @@ function MediaTab() {
       end_year:        form.end_year        ? parseInt(form.end_year)        : null,
       runtime_minutes: form.runtime_minutes ? parseInt(form.runtime_minutes) : null,
       mpa_rating:      form.mpa_rating      || null,
+      imdb_rating:     form.imdb_rating     ? parseFloat(form.imdb_rating)  : null,
       poster_url,
     }
 
@@ -302,6 +304,18 @@ function MediaTab() {
                 <option value="">- none -</option>
                 {MPA_RATINGS.map(r => <option key={r} value={r}>{r}</option>)}
               </select>
+            </div>
+            <div>
+              <Label>RT Score (%)</Label>
+              <input
+                type="number"
+                value={form.imdb_rating}
+                onChange={set('imdb_rating')}
+                placeholder="e.g. 94"
+                style={s.input}
+                min={0}
+                max={100}
+              />
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <Label>Overview</Label>
