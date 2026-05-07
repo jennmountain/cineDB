@@ -36,6 +36,7 @@ export default function DetailPage({ mediaId, navigate, session, profile }) {
   const [editingReview, setEditingReview] = useState(false)
   const [isRecommended, setIsRecommended] = useState(false)
   const [recSubmitting, setRecSubmitting] = useState(false)
+  const [similar, setSimilar] = useState([])
 
   useEffect(() => {
     if (mediaId) load()
@@ -54,6 +55,7 @@ export default function DetailPage({ mediaId, navigate, session, profile }) {
     if (me) setError(me.message)
     else {
       setMedia(m)
+      if (m?.genre) fetchSimilar(m.genre, mediaId)
       setCredits(c || [])
       setReviews(r || [])
       setSeasons(s || [])
@@ -136,6 +138,17 @@ export default function DetailPage({ mediaId, navigate, session, profile }) {
     if (!window.confirm('Delete your review?')) return
     await supabase.from('reviews').delete().eq('user_id', session.user.id).eq('media_id', mediaId)
     setUserReview(null); setRating(0); setReviewText(''); load()
+  }
+
+  async function fetchSimilar(genre, currentId) {
+    const { data } = await supabase
+      .from('media')
+      .select('id, title, type, release_year, genre, avg_rating, poster_url, imdb_rating, mpa_rating')
+      .eq('genre', genre)
+      .neq('id', currentId)
+      .order('avg_rating', { ascending: false })
+      .limit(6)
+    setSimilar(data || [])
   }
 
   if (loading) return <div style={{ padding: 40, color: '#9A9390', fontSize: 14, fontFamily: 'DM Sans, sans-serif' }}>Loading…</div>
@@ -523,6 +536,83 @@ export default function DetailPage({ mediaId, navigate, session, profile }) {
           <p style={{ color: '#C4BAB0', fontSize: 13 }}>No reviews yet. Be the first!</p>
         )}
       </div>
+
+      {/* Similar titles */}
+      {similar.length > 0 && (
+        <div style={{ borderTop: '1px solid #E4DDD4', paddingTop: 28, marginTop: 8 }}>
+          <h2 style={{ fontSize: 13, fontWeight: 600, marginBottom: 20, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9A9390' }}>
+            You Might Also Like
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 16,
+          }}>
+            {similar.map(item => (
+              <div key={item.id}
+                onClick={() => navigate('detail', item.id)}
+                style={{
+                  background: '#fff', borderRadius: 10, border: '1px solid #EDE9E3',
+                  overflow: 'hidden', cursor: 'pointer',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(28,28,26,0.08)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none' }}
+              >
+                {/* Poster */}
+                <div style={{ height: 180, background: '#EDE9E3', position: 'relative', overflow: 'hidden' }}>
+                  {item.poster_url
+                    ? <img src={getPosterUrl(item.poster_url)} alt={item.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#C4BAB0', fontSize: 12 }}>No poster</div>
+                  }
+                  <span style={{
+                    position: 'absolute', top: 8, left: 8,
+                    background: item.type === 'movie' ? 'rgba(181,98,42,0.9)' : 'rgba(28,28,26,0.75)',
+                    color: '#fff', fontSize: 9, fontWeight: 600, padding: '3px 8px',
+                    borderRadius: 100, letterSpacing: '0.08em', textTransform: 'uppercase',
+                  }}>
+                    {item.type === 'movie' ? 'Film' : 'TV'}
+                  </span>
+                  {item.mpa_rating && (
+                    <span style={{
+                      position: 'absolute', top: 8, right: 8,
+                      background: 'rgba(0,0,0,0.5)', color: '#fff',
+                      fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 4,
+                    }}>
+                      {item.mpa_rating}
+                    </span>
+                  )}
+                </div>
+                {/* Info */}
+                <div style={{ padding: '11px 13px 13px' }}>
+                  <div style={{
+                    fontFamily: 'DM Serif Display, serif', fontSize: 14, color: '#1C1C1A',
+                    marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>
+                    {item.title}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 11, color: '#9A9390' }}>
+                      {item.release_year || '—'}{item.genre ? ` · ${item.genre}` : ''}
+                    </span>
+                    {item.avg_rating > 0 && (
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#1C1C1A', display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <span style={{ color: '#B5622A', fontSize: 10 }}>★</span>{item.avg_rating}
+                      </span>
+                    )}
+                  </div>
+                  {item.imdb_rating && (
+                    <div style={{ fontSize: 10, color: '#9A9390', marginTop: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <span>🍅</span><span>RT {item.imdb_rating}%</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
