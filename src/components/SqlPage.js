@@ -125,15 +125,15 @@ const sqlStyles = `
   }
 
   .sql-quick-btns {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .sql-quick-btn {
-    padding: 5px 12px;
+    padding: 7px 18px;
     border-radius: 100px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     border: 1.5px solid #D4C9BA;
     background: transparent;
@@ -141,8 +141,7 @@ const sqlStyles = `
     cursor: pointer;
     font-family: 'DM Sans', sans-serif;
     transition: all 0.15s;
-    white-space: normal;
-    text-align: center;
+    white-space: nowrap;
   }
 
   .sql-quick-btn:hover {
